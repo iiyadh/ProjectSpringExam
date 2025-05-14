@@ -1,0 +1,43 @@
+# Java & Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+**/logs/
+*.log
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+rebel.xml
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# VSCode
+.vscode/git
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Node.js (Cypress frontend)
+**/node_modules/
+**/package-lock.json
+
+# Cypress output
+**/cypress/videos/
+**/cypress/screenshots/
+
+# Environment Files
+.env
+.env.local
