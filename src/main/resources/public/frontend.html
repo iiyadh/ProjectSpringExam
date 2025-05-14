@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Books App</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 5px; }
+  </style>
+</head>
+<body>
+<h2>Books App</h2>
+
+<form id="book-form">
+  <input type="text" name="isbn" placeholder="ISBN" required />
+  <input type="text" name="title" placeholder="Title" required />
+  <input type="text" name="author" placeholder="Author" required />
+  <button type="submit">Add Book</button>
+</form>
+
+<table id="books-table">
+  <thead>
+  <tr><th>ISBN</th><th>Title</th><th>Author</th><th>Actions</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  const apiUrl = "http://localhost:8080/api/books";
+  const form = document.getElementById("book-form");
+  const tableBody = document.querySelector("#books-table tbody");
+
+  function loadBooks() {
+    fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+              tableBody.innerHTML = "";
+              data.forEach(book => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+              <td>${book.isbn}</td>
+              <td>${book.title}</td>
+              <td>${book.author}</td>
+              <td>
+                <button class="edit-button">Edit</button>
+                <button class="delete-button">Delete</button>
+              </td>
+            `;
+                row.querySelector(".edit-button").onclick = () => editBook(book);
+                row.querySelector(".delete-button").onclick = () => deleteBook(book.isbn);
+              });
+            });
+  }
+
+  form.onsubmit = e => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const book = Object.fromEntries(formData.entries());
+
+    fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(book)
+    }).then(() => {
+      form.reset();
+      loadBooks();
+    });
+  };
+
+  function editBook(book) {
+    const title = prompt("New title:", book.title);
+    if (title === null) return;
+    fetch(`${apiUrl}/${book.isbn}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...book, title })
+    }).then(loadBooks);
+  }
+
+  function deleteBook(isbn) {
+    fetch(`${apiUrl}/${isbn}`, { method: "DELETE" })
+            .then(loadBooks);
+  }
+
+  loadBooks();
+</script>
+</body>
+</html>
